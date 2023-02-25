@@ -7,7 +7,10 @@ import { themeConfig } from '@themeConfig'
 import Footer from '@/layouts/components/Footer.vue'
 import NavbarThemeSwitcher from '@/layouts/components/NavbarThemeSwitcher.vue'
 import UserProfile from '@/layouts/components/UserProfile.vue'
+
+// @layouts plugin
 import { HorizontalNavLayout } from '@layouts'
+import NavBarI18n from "@/layouts/components/NavBarI18n.vue"
 import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
 
 const { appRouteTransition } = useThemeConfig()
@@ -30,7 +33,7 @@ const { appRouteTransition } = useThemeConfig()
         </h1>
       </RouterLink>
       <VSpacer />
-
+      <NavBarI18n />
       <NavbarThemeSwitcher class="me-2" />
       <UserProfile />
     </template>

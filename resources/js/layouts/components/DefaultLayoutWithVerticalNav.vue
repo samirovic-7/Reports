@@ -1,6 +1,7 @@
-<script setup>
+<script  setup>
 import navItems from '@/navigation/vertical'
 import { useThemeConfig } from '@core/composable/useThemeConfig'
+import { themeConfig } from '@themeConfig'
 
 // Components
 import Footer from '@/layouts/components/Footer.vue'
@@ -9,6 +10,7 @@ import UserProfile from '@/layouts/components/UserProfile.vue'
 
 // @layouts plugin
 import { VerticalNavLayout } from '@layouts'
+import NavBarI18n from "@/layouts/components/NavBarI18n.vue"
 
 const { appRouteTransition, isLessThanOverlayNavBreakpoint } = useThemeConfig()
 const { width: windowWidth } = useWindowSize()
@@ -36,9 +38,9 @@ const { width: windowWidth } = useWindowSize()
           />
         </VBtn>
         <NavbarThemeSwitcher />
-
+        <VSpacer/>
+        <NavBarI18n/>
         <VSpacer />
-
         <UserProfile />
       </div>
     </template>

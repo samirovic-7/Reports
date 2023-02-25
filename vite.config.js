@@ -9,6 +9,7 @@ import Pages from 'vite-plugin-pages'
 import Layouts from 'vite-plugin-vue-layouts'
 import vuetify from 'vite-plugin-vuetify'
 import laravel from 'laravel-vite-plugin'
+import VueI18n from '@intlify/vite-plugin-vue-i18n'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -53,9 +54,17 @@ export default defineConfig({
         enabled: true,
         filepath: './.eslintrc-auto-import.json',
       },
-      imports: ['vue', 'vue-router', '@vueuse/core', '@vueuse/math', 'pinia'],
+      imports: ['vue', 'vue-router', '@vueuse/core', '@vueuse/math', 'vue-i18n' , 'pinia'],
       vueTemplate: true,
     }),
+    VueI18n({
+      runtimeOnly:true,
+      compositionOnly:true,
+      include:[
+        fileURLToPath(new URL('./resources/js/plugins/i18n/locales/**',import.meta.url)),
+      ],
+    }),
+
     DefineOptions(),
   ],
   define: { 'process.env': {} },

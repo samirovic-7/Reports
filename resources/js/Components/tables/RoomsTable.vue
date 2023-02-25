@@ -1,4 +1,3 @@
-
 <template>
   <div style="margin-top: 5%">
     <div style="float: right;width: 45%;display: flex;justify-content: space-between;">
@@ -11,6 +10,7 @@
             style="width: 18%;"
           />
           <VSpacer />
+
           <VTextField
             v-model="search"
             type="text"
@@ -94,6 +94,7 @@
                       type="number"
                     />
                   </VCol>
+
                   <VCol
                     cols="12"
                     sm="6"
@@ -102,22 +103,12 @@
                     <VTextField
                       v-model="room_key_code"
                       label="Room Key Code"
-                      persistent-hint
+                      persistent-placeholder
                       type="number"
                     />
                   </VCol>
-                  <VCol
-                    cols="12"
-                    sm="6"
-                    md="6"
-                  >
-                    <VTextField
-                      v-model="room_connection"
-                      label="room connection"
-                      persistent-hint
-                      type="number"
-                    />
-                  </VCol>
+
+
                   <VCol
                     cols="12"
                     sm="6"
@@ -194,12 +185,21 @@
                     sm="6"
                     md="6"
                   >
-                    <VTextField
-                      v-model="room_active"
-                      label="room active"
-                      persistent-hint
-                      type="number"
-                    />
+                    <VRadioGroup inline label="room connection" v-model="room_connection">
+                      <VRadio label="true" value="1"></VRadio>
+                      <VRadio label="false" value="0"></VRadio>
+                    </VRadioGroup>
+                  </VCol>
+
+                  <VCol
+                    cols="12"
+                    sm="6"
+                    md="6"
+                  >
+                    <VRadioGroup inline label="room Active" v-model="room_active">
+                      <VRadio label="true" value="1"></VRadio>
+                      <VRadio label="false" value="0"></VRadio>
+                    </VRadioGroup>
                   </VCol>
 
 
@@ -227,6 +227,8 @@
         </VDialog>
       </VRow>
     </div>
+
+
     <div style="float: left;width: 14%;display: flex;justify-content: space-between">
       <VBtn
         class="btn"
@@ -247,6 +249,8 @@
     <br>
 
     <VTable style="table-layout: fixed">
+
+
       <thead>
         <tr>
           <th class="text-left">
@@ -275,6 +279,8 @@
           </th>
         </tr>
       </thead>
+
+
       <tbody>
 
         <tr
@@ -283,7 +289,10 @@
 
         >
           <td> {{item.room_id}}</td>
-          <td>{{ item.room_name_en }}</td>
+          <td>
+            <p v-if="$i18n.locale === 'en'">{{ item.room_name_en }}</p>
+            <p v-else="$i18n.locale === 'ar'">{{ item.room_name_loc }}</p>
+          </td>
           <td>{{ item.room_max_pax }}</td>
           <td>{{ item.roomType.rm_type_name }}</td>
           <td>{{ item.floors.floor_name }}</td>
@@ -318,37 +327,6 @@
             >
               <VIcon icon="mdi-delete" />
             </VBtn>
-
-            <VDialog
-              v-model="dialog_delete"
-              activator="parent"
-              width="auto"
-            >
-              <VCard>
-                <VCardText>
-                  Do You Want To Delete the
-                </VCardText>
-                <div style="display: flex;justify-content: space-between">
-                  <VCardActions>
-                    <VBtn
-                      color="primary"
-                      @click="dialog_delete = false"
-                    >
-                      Close
-                    </VBtn>
-                  </VCardActions>
-
-                  <VCardActions>
-                    <VBtn
-                      color="primary"
-                      @click="deleteData"
-                    >
-                      Delete
-                    </VBtn>
-                  </VCardActions>
-                </div>
-              </VCard>
-            </VDialog>
           </td>
           <td>
             <VBtn
@@ -452,6 +430,10 @@
                               label="room connection"
                               type="number"
                             />
+<!--                            <VRadioGroup inline label="room conn" v-model="room_connection_edit">-->
+<!--                              <VRadio label="true" value="1"></VRadio>-->
+<!--                              <VRadio label="false" value="0"></VRadio>-->
+<!--                            </VRadioGroup>-->
                           </VCol>
                           <VCol
                             cols="12"
@@ -494,7 +476,7 @@
                             sm="6"
                           >
                             <VSelect
-                              v-model="room_type_edit"
+                              v-model="room_type_select_edit"
                               :items="roomType"
                               item-title="rm_type_name"
                               item-value="id"
@@ -528,12 +510,11 @@
                             sm="6"
                             md="6"
                           >
-                            <VTextField
-                              v-model="room_active_edit"
-                              label="room active"
-                              persistent-hint
-                              type="number"
-                            />
+
+                            <VRadioGroup inline label="room Active" v-model="room_active_edit">
+                              <VRadio label="true" value="1"></VRadio>
+                              <VRadio label="false" value="0"></VRadio>
+                            </VRadioGroup>
                           </VCol>
 
 
@@ -599,7 +580,6 @@ export default {
       search:'',
       page: 1,
       dialog: false,
-      dialog_delete: false,
       dialog3: false,
       roles:[],
       itemid: '',
@@ -617,7 +597,7 @@ export default {
       room_status_edit: '',
       room_hk_status_edit: '',
       room_sort_edit: '',
-      room_type_edit: '',
+      room_type_select_edit: '',
       room_key_options_edit: '',
       room_active_edit: '',
 
@@ -634,6 +614,8 @@ export default {
       hk_stauts  : '',
       sort_order  : '',
       roomType_selected:'',
+
+
       roomType :[],
 
       floors: {
@@ -691,19 +673,43 @@ export default {
     DeleteAlert() {
 
       this.$swal.fire({
-        title: 'Do you want to save the changes?',
+        icon: 'error',
+        title: 'Do you want to Delete',
         showDenyButton: true,
         showCancelButton: true,
-        confirmButtonText: 'Save',
+        showConfirmButton:false,
+        denyButtonText: `Deleted`,
       }).then(result => {
-        /* Read more about isConfirmed, isDenied below */
-        if (result.isConfirmed) {
-          this.$swal.fire('no i want delete!', '', 'success')
-        } else if (result.isDenied) {
-          this.$swal.fire('Changes are not saved', '', 'info')
+
+        if (result.isDenied) {
+          this.deleteData()
+
+          const Toast = this.$swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: toast => {
+              toast.addEventListener('mouseenter', this.$swal.stopTimer)
+              toast.addEventListener('mouseleave', this.$swal.resumeTimer)
+            },
+          })
+
+          Toast.fire({
+            icon: 'success',
+            title: `Data ${this.room_name_en} Deleted successfully`,
+            color: 'red',
+            timer: 10000,
+          })
         }
       })
     },
+
+    console(){
+      console.log('done')
+    },
+
     UpdateAlert() {
       const Toast = this.$swal.mixin({
         toast: true,
@@ -724,11 +730,14 @@ export default {
         timer: 3000,
       })
     },
+
+
     getAllData(){
       axios
         .get('api/rooms')
         .then(response => (this.roles = response.data.data))
     },
+
 
     exportExecl(){
       const XLSX = xlsx
@@ -738,6 +747,8 @@ export default {
       XLSX.utils.book_append_sheet(workbook, worksheet, "framework")
       XLSX.writeFile(workbook,"users.xlsx")
     },
+
+
     Downpdf(){
       let docDefinition = {
         content: [
@@ -760,8 +771,10 @@ export default {
       // pdfMake.createPdf(docDefinition).print()
 
     },
+
+
     async  Add(){
-      console.log(this.roomType_selected)
+
       try {
         const user = await axios.post(
           "api/rooms",
@@ -792,84 +805,124 @@ export default {
       }
     },
 
+
     async  Delete(GetId){
       this.itemid = GetId
-      console.log(this.itemid)
+      this.DeleteAlert()
     },
 
     deleteData(){
-      console.log(this.itemid)
-
       axios
         .delete(`api/rooms/${this.itemid}`)
         .then(response => (this.roles = response.data.data))
       this.getAllData()
-      this.dialog_delete = false
-      console.log(this.roles)
-
-      this.DeleteAlert()
     },
 
 
-    async  Updates(GetId_edit){
-      this.itemid = GetId_edit
+    async  Updates(Getdata){
 
-      console.log(this.itemid)
+      this.itemid = Getdata
 
-      this.room_id_edit= GetId_edit.room_id,
-      this.room_name_edit= GetId_edit.room_name_en,
-      this.room_name_loc_edit= GetId_edit.room_name_loc,
-      this.room_max_pax_edit= GetId_edit.room_max_pax,
-      this.room_phone_no_edit= GetId_edit.room_phone_no,
-      this.room_phone_ext_edit= GetId_edit.room_phone_ext,
-      this.room_key_code_edit= GetId_edit.room_key_code,
-      this.room_connection_edit= GetId_edit.room_connection,
-      this.room_status_edit= GetId_edit.fo_status,
-      this.room_hk_status_edit= GetId_edit.hk_stauts,
-      this.room_sort_edit= GetId_edit.sort_order,
-      this.room_key_options_edit= GetId_edit.room_key_options,
-      this.room_active_edit= GetId_edit.room_active
+      console.log(this.itemid.roomType.id)
+
+
+
+      this.room_id_edit= Getdata.room_id,
+      this.room_name_edit= Getdata.room_name_en,
+      this.room_name_loc_edit= Getdata.room_name_loc,
+      this.room_max_pax_edit= Getdata.room_max_pax,
+      this.room_phone_no_edit= Getdata.room_phone_no,
+      this.room_phone_ext_edit= Getdata.room_phone_ext,
+      this.room_key_code_edit= Getdata.room_key_code,
+      this.room_connection_edit= Getdata.room_connection,
+      this.room_status_edit= Getdata.fo_status,
+      this.room_hk_status_edit= Getdata.hk_stauts,
+      this.room_sort_edit= Getdata.sort_order,
+      this.room_key_options_edit= Getdata.room_key_options,
+      this.room_active_edit= Getdata.room_active
+      this.room_type_select_edit= Getdata.roomType.id
 
     },
+
 
     async updateUser() {
-      console.log(this.itemid)
-      axios
-        .put(`api/rooms/${this.GetId_edit}`,{
-          room_name_en: this.room_name_edit,
-          room_name_loc: this.room_name_loc_edit,
-          room_max_pax: this.room_max_pax_edit,
-          room_phone_no: this.room_phone_no_edit,
-          room_phone_ext: this.room_phone_ext_edit,
-          room_key_code: this.room_key_code_edit,
-          room_connection: this.room_connection_edit,
-          fo_status: this.room_status_edit,
-          hk_stauts: this.room_hk_status_edit,
-          sort_order: this.room_sort_edit,
-          room_type_id: this.roomType_selected,
-          room_key_options: this.room_key_options_edit,
-          room_active: this.room_active_edit,
-        })
-        .then(response => {
-          (this.roles = response.data.data),
-          this.room_name_edit = '',
-          this.room_name_loc_edit = '',
-          this.room_max_pax_edit = '',
-          this.room_phone_no_edit = '',
-          this.room_phone_ext_edit = '',
-          this.room_connection_edit = '',
-          this.room_key_code_edit = '',
-          this.room_status_edit = '',
-          this.room_hk_status_edit = '',
-          this.room_sort_edit = '',
-          this.roomType_selected = '',
-          this.room_key_options_edit = '',
-          this.room_active_edit = ''
 
-        })
-      this.getAllData()
-      this.UpdateAlert()
-      this.dialog3 = false
+
+
+      console.log(this.room_connection_edit)
+
+      try {
+        const user = await axios.put(
+          `api/rooms/${this.itemid.room_id}`,
+          {
+            room_name_en: this.room_name_edit,
+            room_name_loc: this.room_name_loc_edit,
+            room_max_pax: this.room_max_pax_edit,
+            room_phone_no: this.room_phone_no_edit,
+            room_phone_ext: this.room_phone_ext_edit,
+            room_type_id: this.room_type_select_edit,
+            fo_status: this.room_status_edit,
+            room_active: this.room_active_edit,
+            room_key_options: this.room_key_options_edit,
+            room_key_code: this.room_key_code_edit,
+            hk_stauts: this.room_hk_status_edit,
+            sort_order: this.room_sort_edit,
+            room_connection: this.room_connection_edit,
+
+          },
+        )
+
+        console.log(user)
+        this.getAllData()
+        this.dialog3 = false
+        this.UpdateAlert()
+      } catch(e) {
+        console.log(e)
+      }
+
+
+
+
+      // axios
+      //   .put(`api/rooms/${this.Getdata}`,{
+      //     room_name_en: this.room_name_edit,
+      //     room_name_loc: this.room_name_loc_edit,
+      //     room_max_pax: this.room_max_pax_edit,
+      //     room_phone_no: this.room_phone_no_edit,
+      //     room_phone_ext: this.room_phone_ext_edit,
+      //     room_key_code: this.room_key_code_edit,
+      //     room_connection: this.room_connection_edit,
+      //     fo_status: this.room_status_edit,
+      //     hk_stauts: this.room_hk_status_edit,
+      //     sort_order: this.room_sort_edit,
+      //     room_type_id: this.roomType_selected,
+      //     room_key_options: this.room_key_options_edit,
+      //     room_active: this.room_active_edit,
+      //   })
+      //   .then(response => {
+      //     console.log(this.room_name_edit)
+
+          // this.room_name_en = this.room_name_edit
+
+          // this.room_max_pax_edit = '',
+          // this.room_phone_no_edit = '',
+          // this.room_phone_ext_edit = '',
+          // this.room_connection_edit = '',
+          // this.room_key_code_edit = '',
+          // this.room_status_edit = '',
+          // this.room_hk_status_edit = '',
+          // this.room_sort_edit = '',
+          // this.roomType_selected = '',
+          // this.room_key_options_edit = '',
+          // this.room_active_edit = ''
+
+        // })
+      // this.getAllData()
+      // this.UpdateAlert()
+      // this.dialog3 = false
+
+
+
     },
 
 
@@ -881,6 +934,7 @@ export default {
         .get('api/room_types')
         .then(response => (this.roomType = response.data))
     },
+
 
   },
 }

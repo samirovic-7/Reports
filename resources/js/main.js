@@ -3,8 +3,10 @@ import '@/@iconify/icons-bundle'
 import App from '@/App.vue'
 import layoutsPlugin from '@/plugins/layouts'
 import vuetify from '@/plugins/vuetify'
+import i18n from '@/plugins/i18n'
 import { loadFonts } from '@/plugins/webfontloader'
 import router from '@/router'
+// eslint-disable-next-line import/no-unresolved
 import '@core-scss/template/index.scss'
 import '@styles/styles.scss'
 import { createPinia } from 'pinia'
@@ -25,6 +27,8 @@ app.use(vuetify)
 app.use(createPinia())
 app.use(router)
 app.use(layoutsPlugin)
-app.use(VueSweetalert2);
+app.use(VueSweetalert2)
+app.use(i18n)
+
 // Mount vue app
 app.mount('#app')
